@@ -28,7 +28,7 @@ Route::get('/create-admin-temp', function () {
 
     $user = User::create([
         'name' => 'Admin',
-        'email' => 'admin@shop.com',
+        'email' => 'admin@example.com',
         'password' => Hash::make('password123'),
         'role' => 'admin' // remove if you don’t have this column
     ]);
