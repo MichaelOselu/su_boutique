@@ -30,7 +30,7 @@ Route::get('/create-admin-temp', function () {
         'name' => 'Admin',
         'email' => 'admin@shop.com',
         'password' => Hash::make('password123'),
-        'is_admin' => true, // remove if you don’t have this column
+        'role' => 'admin' // remove if you don’t have this column
     ]);
 
     return "Admin created successfully!";
