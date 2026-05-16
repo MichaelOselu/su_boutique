@@ -12,6 +12,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN composer install --no-dev --optimize-autoloader
 
+RUN php artisan migrate --force
+RUN php artisan db:seed --force
 # Install frontend deps + build Vite
 RUN npm install
 RUN npm run build
