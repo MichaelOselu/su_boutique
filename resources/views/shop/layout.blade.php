@@ -120,33 +120,55 @@
 
         </nav>
 
-        <!-- USER FOOTER -->
-        <div class="p-4 border-t border-gray-800">
+<!-- USER FOOTER -->
+<div class="p-4 border-t border-gray-800">
 
-            <div class="flex items-center justify-between gap-3">
+    @auth
 
-                <div class="min-w-0">
-                    <p class="text-sm font-semibold truncate">
-                        {{ auth()->user()->name ?? 'Guest' }}
-                    </p>
+        <div class="flex items-center justify-between gap-3">
 
-                    <p class="text-xs text-gray-400 truncate">
-                        {{ auth()->user()->email ?? '' }}
-                    </p>
-                </div>
+            <div class="min-w-0">
+                <p class="text-sm font-semibold truncate">
+                    {{ auth()->user()->name }}
+                </p>
 
-                @auth
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="text-red-400 hover:text-red-300 text-sm">
-                        Logout
-                    </button>
-                </form>
-                @endauth
-
+                <p class="text-xs text-gray-400 truncate">
+                    {{ auth()->user()->email }}
+                </p>
             </div>
 
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="text-red-400 hover:text-red-300 text-sm">
+                    Logout
+                </button>
+            </form>
+
         </div>
+
+    @else
+
+        <div class="space-y-2">
+
+            <p class="text-xs text-gray-400">
+                Welcome, Guest
+            </p>
+
+            <a href="{{ route('login') }}"
+               class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 rounded-lg">
+                Login
+            </a>
+
+            <a href="{{ route('register') }}"
+               class="block w-full text-center border border-gray-600 hover:bg-gray-800 text-sm py-2 rounded-lg">
+                Register
+            </a>
+
+        </div>
+
+    @endauth
+
+</div>
 
     </aside>
 
