@@ -2,12 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>@yield('title', 'My Ecommerce Store')</title>
 
+    <!-- Tailwind CDN (your working setup) -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
@@ -27,424 +26,244 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        body.sidebar-open {
+            overflow: hidden;
+        }
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen overflow-x-hidden flex flex-col">
 
 @php
-
     $cartCount = count(session('cart', []));
 
     $wishlistCount = auth()->check()
         ? \App\Models\Wishlist::where('user_id', auth()->id())->count()
         : 0;
 
-    /*
-    |------------------------------------------
-    | FLASH SALE GLOBAL FLAG (SAFE DEFAULT)
-    |------------------------------------------
-    */
     $flashSales = $flashSales ?? collect();
-
 @endphp
 
 <!-- =========================
-     TOP BAR
+     MOBILE OVERLAY (ADMIN STYLE)
 ========================= -->
-<div class="bg-gray-900 text-white text-xs sm:text-sm">
+<div id="sidebar-overlay"
+     class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
 
-    <div class="max-w-7xl mx-auto px-4 py-2 flex flex-col sm:flex-row justify-between gap-2">
-
-        <div class="flex items-center gap-4 flex-wrap">
-            <span>🚚 Fast Delivery</span>
-            <span>🔒 Secure Payments</span>
-        </div>
-
-        <div class="flex items-center gap-4 flex-wrap">
-
-            <span>📞 +254 700 000 000</span>
-
-            <span class="hidden sm:block">
-                ✉ support@shop.com
-            </span>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!-- =========================
-     NAVBAR
-========================= -->
-<nav class="bg-white shadow sticky top-0 z-50">
-
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-        <div class="flex justify-between items-center h-16 gap-3">
-
-            <!-- LEFT SIDE -->
-            <div class="flex items-center gap-4 lg:gap-8">
-
-                <!-- LOGO -->
-                <a href="{{ route('home') }}"
-                   class="text-2xl font-extrabold text-blue-600 tracking-tight whitespace-nowrap">
-                    Shop
-                </a>
-
-                <!-- DESKTOP NAV -->
-                <div class="hidden lg:flex items-center gap-6 text-gray-700 font-medium">
-
-                    <a href="{{ route('home') }}"
-                       class="hover:text-blue-600 transition">
-                        Home
-                    </a>
-
-                    <a href="{{ route('shop') }}"
-                       class="hover:text-blue-600 transition">
-                        Shop
-                    </a>
-
-                    @auth
-
-                        <a href="{{ route('orders.my') }}"
-                           class="hover:text-blue-600 transition">
-                            My Orders
-                        </a>
-
-                        <a href="{{ route('wishlist.index') }}"
-                           class="hover:text-red-500 transition">
-                            Wishlist
-                        </a>
-
-                        <a href="{{ route('profile.edit') }}"
-                           class="hover:text-blue-600 transition">
-                            Profile
-                        </a>
-
-                    @endauth
-
-                </div>
-
-            </div>
-
-            <!-- SEARCH -->
-            <div class="hidden md:flex flex-1 max-w-2xl mx-4 lg:mx-8">
-
-                <form action="{{ route('shop') }}"
-                      method="GET"
-                      class="w-full">
-
-                    <div class="flex items-center bg-gray-100 border border-gray-200 rounded-full overflow-hidden">
-
-                        <div class="px-4 text-gray-400">
-                            🔍
-                        </div>
-
-                        <input
-                            type="text"
-                            name="search"
-                            value="{{ request('search') }}"
-                            placeholder="Search products, categories..."
-                            class="w-full bg-transparent py-3 px-2 focus:outline-none">
-
-                        <button
-                            type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 lg:px-6 py-3 transition whitespace-nowrap">
-
-                            Search
-                        </button>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-            <!-- RIGHT SIDE -->
-            <div class="flex items-center gap-4 sm:gap-5">
-
-                <!-- WISHLIST -->
-                @auth
-
-                <a href="{{ route('wishlist.index') }}"
-                   class="relative hidden sm:flex items-center justify-center text-gray-700 hover:text-red-500 transition text-2xl">
-
-                    ❤
-
-                    @if($wishlistCount > 0)
-
-                        <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                            {{ $wishlistCount }}
-                        </span>
-
-                    @endif
-
-                </a>
-
-                @endauth
-
-                <!-- CART -->
-                <a href="{{ route('cart.index') }}"
-                   class="relative text-gray-700 hover:text-blue-600 transition text-2xl">
-
-                    🛒
-
-                    @if($cartCount > 0)
-
-                        <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                            {{ $cartCount }}
-                        </span>
-
-                    @endif
-
-                </a>
-
-                <!-- DESKTOP AUTH -->
-                <div class="hidden lg:flex items-center gap-4">
-
-                    @auth
-
-                        <a href="{{ route('dashboard') }}"
-                           class="text-gray-700 hover:text-blue-600 transition">
-                            Dashboard
-                        </a>
-
-                        <form method="POST"
-                              action="{{ route('logout') }}">
-                            @csrf
-
-                            <button class="text-red-500 hover:text-red-700 transition">
-                                Logout
-                            </button>
-                        </form>
-
-                    @else
-
-                        <a href="{{ route('login') }}"
-                           class="hover:text-blue-600 transition">
-                            Login
-                        </a>
-
-                        <a href="{{ route('register') }}"
-                           class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition whitespace-nowrap">
-                            Register
-                        </a>
-
-                    @endauth
-
-                </div>
-
-                <!-- MOBILE MENU BUTTON -->
-                <button id="mobile-menu-btn"
-                        class="lg:hidden text-3xl text-gray-700">
-
-                    ☰
-                </button>
-
-            </div>
-
-        </div>
-
-        <!-- MOBILE SEARCH -->
-        <div class="md:hidden pb-4">
-
-            <form action="{{ route('shop') }}"
-                  method="GET">
-
-                <div class="flex items-center bg-gray-100 border border-gray-200 rounded-full overflow-hidden">
-
-                    <div class="px-4 text-gray-400">
-                        🔍
-                    </div>
-
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Search products..."
-                        class="w-full bg-transparent py-3 px-2 focus:outline-none text-sm">
-
-                    <button
-                        type="submit"
-                        class="bg-blue-600 text-white px-4 py-3 whitespace-nowrap">
-
-                        Go
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
+<div class="flex h-screen overflow-hidden">
 
     <!-- =========================
-         MOBILE MENU
-    ========================= -->
-    <div id="mobile-menu"
-         class="hidden lg:hidden border-t bg-white shadow-md">
+         SIDEBAR (ADMIN STYLE)
+    ========================== -->
+    <aside id="sidebar"
+           class="fixed lg:static inset-y-0 left-0 z-50
+                  w-72 bg-gray-900 text-white
+                  transform -translate-x-full lg:translate-x-0
+                  transition-transform duration-300 ease-in-out
+                  flex flex-col shadow-xl">
 
-        <div class="px-4 py-5 space-y-5 text-gray-700">
+        <!-- BRAND -->
+        <div class="p-6 border-b border-gray-800 flex items-center justify-between">
+
+            <div>
+                <h1 class="text-2xl font-extrabold tracking-tight">
+                    Shop
+                </h1>
+
+                <p class="text-xs text-gray-400 mt-1">
+                    Ecommerce Store
+                </p>
+            </div>
+
+            <button id="close-sidebar"
+                    class="lg:hidden text-2xl text-gray-400 hover:text-white transition">
+                ✕
+            </button>
+
+        </div>
+
+        <!-- NAVIGATION -->
+        <nav class="flex-1 overflow-y-auto p-4 space-y-2 text-sm">
 
             <a href="{{ route('home') }}"
-               class="block hover:text-blue-600 font-medium">
+               class="block px-4 py-3 rounded-lg hover:bg-gray-800">
                 Home
             </a>
 
             <a href="{{ route('shop') }}"
-               class="block hover:text-blue-600 font-medium">
+               class="block px-4 py-3 rounded-lg hover:bg-gray-800">
                 Shop
             </a>
 
             @auth
-
                 <a href="{{ route('orders.my') }}"
-                   class="block hover:text-blue-600 font-medium">
+                   class="block px-4 py-3 rounded-lg hover:bg-gray-800">
                     My Orders
                 </a>
 
                 <a href="{{ route('wishlist.index') }}"
-                   class="block hover:text-red-500 font-medium">
+                   class="block px-4 py-3 rounded-lg hover:bg-gray-800">
                     Wishlist
                 </a>
 
                 <a href="{{ route('profile.edit') }}"
-                   class="block hover:text-blue-600 font-medium">
+                   class="block px-4 py-3 rounded-lg hover:bg-gray-800">
                     Profile
                 </a>
 
                 <a href="{{ route('dashboard') }}"
-                   class="block hover:text-blue-600 font-medium">
+                   class="block px-4 py-3 rounded-lg hover:bg-gray-800">
                     Dashboard
                 </a>
+            @endauth
 
-                <form method="POST"
-                      action="{{ route('logout') }}">
+        </nav>
+
+        <!-- USER FOOTER -->
+        <div class="p-4 border-t border-gray-800">
+
+            <div class="flex items-center justify-between gap-3">
+
+                <div class="min-w-0">
+                    <p class="text-sm font-semibold truncate">
+                        {{ auth()->user()->name ?? 'Guest' }}
+                    </p>
+
+                    <p class="text-xs text-gray-400 truncate">
+                        {{ auth()->user()->email ?? '' }}
+                    </p>
+                </div>
+
+                @auth
+                <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
-                    <button class="text-red-500 font-medium">
+                    <button class="text-red-400 hover:text-red-300 text-sm">
                         Logout
                     </button>
                 </form>
-
-            @else
-
-                <a href="{{ route('login') }}"
-                   class="block hover:text-blue-600 font-medium">
-                    Login
-                </a>
-
-                <a href="{{ route('register') }}"
-                   class="block hover:text-blue-600 font-medium">
-                    Register
-                </a>
-
-            @endauth
-
-        </div>
-
-    </div>
-
-</nav>
-
-<!-- =========================
-     HERO FLASH BANNER
-========================= -->
-<div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-
-    <div class="max-w-7xl mx-auto px-4 py-3 text-center text-sm sm:text-base font-medium">
-
-        🔥 Big Discounts Available Today — Shop Now & Save More
-
-    </div>
-
-</div>
-
-<!-- =========================
-     FLASH SALES PREVIEW BAR
-========================= -->
-@if($flashSales->count())
-
-<div class="bg-white border-b">
-
-    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-
-        <div class="flex items-center gap-2 text-sm font-semibold text-gray-700">
-            ⚡ Flash Deals Available
-        </div>
-
-        <a href="{{ route('shop', ['sort' => 'flash']) }}"
-           class="text-sm text-red-600 hover:underline font-medium whitespace-nowrap">
-
-            View Flash Sales →
-
-        </a>
-
-    </div>
-
-</div>
-
-@endif
-
-<!-- =========================
-     PAGE CONTENT
-========================= -->
-<main class="flex-1">
-
-    <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-6">
-
-        @yield('content')
-
-    </div>
-
-</main>
-
-<!-- =========================
-     NEWSLETTER
-========================= -->
-<section class="bg-white border-t">
-
-    <div class="max-w-7xl mx-auto px-4 py-10">
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-
-            <div>
-
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">
-                    Subscribe to our newsletter
-                </h2>
-
-                <p class="text-gray-500">
-                    Get updates about new arrivals, discounts, and offers.
-                </p>
+                @endauth
 
             </div>
 
-            <form class="flex flex-col sm:flex-row gap-3">
-
-                <input
-                    type="email"
-                    placeholder="Enter your email"
-                    class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-                <button
-                    type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition whitespace-nowrap">
-
-                    Subscribe
-
-                </button>
-
-            </form>
-
         </div>
 
-    </div>
+    </aside>
 
-</section>
+    <!-- =========================
+         MAIN CONTENT AREA
+    ========================== -->
+    <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+
+        <!-- =========================
+             TOP BAR (MIXED STYLE)
+        ========================== -->
+        <div class="bg-gray-900 text-white text-xs sm:text-sm">
+
+            <div class="max-w-7xl mx-auto px-4 py-2 flex flex-col sm:flex-row justify-between gap-2">
+
+                <div class="flex gap-4 flex-wrap">
+                    <span>🚚 Fast Delivery</span>
+                    <span>🔒 Secure Payments</span>
+                </div>
+
+                <div class="flex gap-4 flex-wrap">
+                    <span>📞 +254 700 000 000</span>
+                    <span class="hidden sm:block">✉ support@shop.com</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- NAVBAR -->
+        <nav class="bg-white shadow sticky top-0 z-30">
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div class="flex justify-between items-center h-16">
+
+                    <!-- LEFT -->
+                    <div class="flex items-center gap-4">
+
+                        <button id="open-sidebar"
+                                class="lg:hidden text-2xl text-gray-700">
+                            ☰
+                        </button>
+
+                        <a href="{{ route('home') }}"
+                           class="text-2xl font-extrabold text-blue-600">
+                            Shop
+                        </a>
+
+                    </div>
+
+                    <!-- RIGHT -->
+                    <div class="flex items-center gap-4 text-2xl">
+
+                        @auth
+                        <a href="{{ route('wishlist.index') }}" class="relative">
+                            ❤
+                            @if($wishlistCount > 0)
+                                <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                    {{ $wishlistCount }}
+                                </span>
+                            @endif
+                        </a>
+                        @endauth
+
+                        <a href="{{ route('cart.index') }}" class="relative">
+                            🛒
+                            @if($cartCount > 0)
+                                <span class="absolute -top-2 -right-3 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                                    {{ $cartCount }}
+                                </span>
+                            @endif
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- FLASH BANNER -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-center py-3 text-sm font-medium">
+            🔥 Big Discounts Available Today — Shop Now & Save More
+        </div>
+
+        <!-- PAGE CONTENT -->
+        <main class="flex-1 overflow-y-auto">
+
+            <div class="max-w-7xl mx-auto px-4 py-6">
+
+                @yield('content')
+
+            </div>
+
+            <!-- NEWSLETTER -->
+            <section class="bg-white border-t mt-10">
+
+                <div class="max-w-7xl mx-auto px-4 py-10 grid lg:grid-cols-2 gap-6 items-center">
+
+                    <div>
+                        <h2 class="text-2xl font-bold">Subscribe to our newsletter</h2>
+                        <p class="text-gray-500">Get updates on deals and new arrivals.</p>
+                    </div>
+
+                    <form class="flex gap-3">
+                        <input type="email"
+                               class="flex-1 border rounded-lg px-4 py-3"
+                               placeholder="Enter email">
+
+                        <button class="bg-blue-600 text-white px-6 py-3 rounded-lg">
+                            Subscribe
+                        </button>
+                    </form>
+
+                </div>
+
+            </section>
 
 <!-- =========================
      FOOTER
@@ -563,17 +382,38 @@
 
 </footer>
 
+        </main>
+
+    </div>
+
+</div>
+
 <!-- =========================
-     MOBILE MENU SCRIPT
+     SIDEBAR SCRIPT (ADMIN STYLE)
 ========================= -->
 <script>
 
-    const mobileBtn = document.getElementById('mobile-menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
 
-    mobileBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
+    const openBtn = document.getElementById('open-sidebar');
+    const closeBtn = document.getElementById('close-sidebar');
+
+    function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+        document.body.classList.add('sidebar-open');
+    }
+
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        document.body.classList.remove('sidebar-open');
+    }
+
+    openBtn?.addEventListener('click', openSidebar);
+    closeBtn?.addEventListener('click', closeSidebar);
+    overlay?.addEventListener('click', closeSidebar);
 
 </script>
 
