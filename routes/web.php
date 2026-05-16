@@ -17,6 +17,25 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\SalesController;
 use App\Http\Controllers\Admin\CustomerController;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
+
+
+
+
+Route::get('/create-admin-temp', function () {
+
+    $user = User::create([
+        'name' => 'Admin',
+        'email' => 'admin@shop.com',
+        'password' => Hash::make('password123'),
+        'is_admin' => true, // remove if you don’t have this column
+    ]);
+
+    return "Admin created successfully!";
+});
+
 /*
 |--------------------------------------------------------------------------
 | PUBLIC STORE ROUTES
