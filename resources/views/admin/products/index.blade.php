@@ -98,7 +98,7 @@
 
                                         @if($product->image)
 
-                                            <img src="{{ asset('storage/' . $product->image) }}"
+                                            <img src="{{ asset('uploads/products/' . $product->image) }}"
                                                  class="w-16 h-16 rounded-xl object-cover border">
 
                                         @else
@@ -255,7 +255,7 @@
 
                             @if($product->image)
 
-                                <img src="{{ asset('storage/' . $product->image) }}"
+                                <img src="{{ asset('uploads/products/' . $product->image) }}"
                                      class="w-24 h-24 rounded-xl object-cover border">
 
                             @else

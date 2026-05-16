@@ -186,7 +186,7 @@
 
                             @if($product->image)
 
-                                <img src="{{ asset('storage/' . $product->image) }}"
+                                <img src="{{ asset('uploads/products/' . $product->image) }}"
                                      class="w-14 h-14 rounded-lg object-cover border border-gray-200 flex-shrink-0">
 
                             @else

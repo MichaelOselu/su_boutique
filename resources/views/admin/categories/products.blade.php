@@ -22,7 +22,7 @@
 
             <td class="p-3">
                 @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" width="50">
+                    <img src="{{ asset('uploads/products/' . $product->image) }}" width="50">
                 @endif
             </td>
 
