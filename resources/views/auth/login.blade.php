@@ -1,102 +1,178 @@
-<x-guest-layout>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
 
-    <div class="w-full max-w-md mx-auto">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- Card -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 sm:p-8">
+    <title>Login - My Ecommerce Store</title>
 
-            <!-- Header -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+<!-- TOP BAR (same style as shop) -->
+<div class="bg-gray-900 text-white text-xs sm:text-sm">
+
+    <div class="max-w-7xl mx-auto px-4 py-2 flex flex-col sm:flex-row justify-between gap-2">
+
+        <div class="flex items-center gap-4 flex-wrap">
+            <span>🚚 Fast Delivery</span>
+            <span>🔒 Secure Payments</span>
+        </div>
+
+        <div class="flex items-center gap-4 flex-wrap">
+            <span>📞 +254 700 000 000</span>
+            <span class="hidden sm:block">✉ support@shop.com</span>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="flex-1 flex items-center justify-center px-4 py-10">
+
+    <div class="w-full max-w-md">
+
+        <!-- LOGIN CARD -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+
+            <!-- HEADER -->
             <div class="mb-6 text-center">
-                <h2 class="text-2xl font-bold text-gray-800">
-                    Welcome Back
-                </h2>
 
-                <p class="text-sm text-gray-500 mt-1">
-                    Login to your account
+                <h1 class="text-3xl font-bold text-gray-800">
+                    Welcome Back
+                </h1>
+
+                <p class="text-gray-500 mt-1">
+                    Login to your account to continue shopping
                 </p>
+
             </div>
 
-            <!-- Session Status -->
-            <x-auth-session-status class="mb-4" :status="session('status')" />
+            <!-- SESSION STATUS -->
+            @if (session('status'))
+                <div class="mb-4 text-sm text-green-600 bg-green-50 p-3 rounded-lg">
+                    {{ session('status') }}
+                </div>
+            @endif
 
+            <!-- FORM -->
             <form method="POST" action="{{ route('login') }}" class="space-y-5">
                 @csrf
 
-                <!-- Email -->
+                <!-- EMAIL -->
                 <div>
-                    <x-input-label for="email" :value="__('Email')" />
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Email
+                    </label>
 
-                    <x-text-input
-                        id="email"
-                        class="block mt-1 w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    <input
                         type="email"
                         name="email"
-                        :value="old('email')"
+                        value="{{ old('email') }}"
                         required
                         autofocus
-                        autocomplete="username"
-                    />
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter your email"
+                    >
 
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                    @error('email')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <!-- Password -->
+                <!-- PASSWORD -->
                 <div>
-                    <x-input-label for="password" :value="__('Password')" />
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Password
+                    </label>
 
-                    <x-text-input
-                        id="password"
-                        class="block mt-1 w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                    <input
                         type="password"
                         name="password"
                         required
-                        autocomplete="current-password"
-                    />
+                        class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Enter your password"
+                    >
 
-                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                    @error('password')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                <!-- Remember + Forgot -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <!-- REMEMBER + FORGOT -->
+                <div class="flex items-center justify-between text-sm">
 
-                    <label for="remember_me" class="inline-flex items-center">
-                        <input id="remember_me"
-                               type="checkbox"
-                               class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500"
-                               name="remember">
-
-                        <span class="ms-2 text-sm text-gray-600">
-                            {{ __('Remember me') }}
-                        </span>
+                    <label class="flex items-center gap-2 text-gray-600">
+                        <input type="checkbox" name="remember" class="rounded border-gray-300">
+                        Remember me
                     </label>
 
                     @if (Route::has('password.request'))
-                        <a class="text-sm text-blue-600 hover:text-blue-800 underline"
-                           href="{{ route('password.request') }}">
-                            {{ __('Forgot password?') }}
+                        <a href="{{ route('password.request') }}"
+                           class="text-blue-600 hover:underline">
+                            Forgot password?
                         </a>
                     @endif
 
                 </div>
 
-                <!-- Actions -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+                <!-- BUTTON -->
+                <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition font-semibold">
 
-                    <a href="{{ route('register') }}"
-                       class="text-sm text-gray-600 hover:text-gray-900 text-center sm:text-left">
-                        Don’t have an account? Register
-                    </a>
+                    Log In
 
-                    <x-primary-button class="w-full sm:w-auto justify-center">
-                        {{ __('Log in') }}
-                    </x-primary-button>
-
-                </div>
+                </button>
 
             </form>
+
+            <!-- FOOTER LINK -->
+            <div class="mt-6 text-center text-sm text-gray-600">
+
+                Don’t have an account?
+
+                <a href="{{ route('register') }}"
+                   class="text-blue-600 hover:underline font-medium">
+                    Register
+                </a>
+
+            </div>
 
         </div>
 
     </div>
 
-</x-guest-layout>
+</main>
+
+<!-- FOOTER (same minimal style) -->
+<footer class="bg-gray-900 text-gray-400 text-center text-sm py-4 mt-10">
+
+    © {{ date('Y') }} My Ecommerce Store. All rights reserved.
+
+</footer>
+
+</body>
+</html>
