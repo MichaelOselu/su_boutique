@@ -274,7 +274,7 @@
                                 Current Image
                             </p>
 
-                            <img src="{{ asset('uploads/products/' . $product->image) }}"
+                            <img src="{{ asset('storage/' . $product->image) }}"
                                  class="w-40 h-40 object-cover rounded-2xl border shadow">
 
                         </div>
